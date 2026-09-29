@@ -1,0 +1,37 @@
+services:
+
+  department-db:
+    image: mysql:8
+    container_name: department-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: department
+    ports:
+      - "3306:3306"
+
+  organization-db:
+    image: mysql:8
+    container_name: organization-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: organization
+    ports:
+      - "3307:3306"
+
+  employee-db:
+    image: mysql:8
+    container_name: employee-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: employee
+    ports:
+      - "3308:3306"
+
+  notification-db:
+    image: mysql:8
+    container_name: notification-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: notification
+    ports:
+      - "3309:3306"
