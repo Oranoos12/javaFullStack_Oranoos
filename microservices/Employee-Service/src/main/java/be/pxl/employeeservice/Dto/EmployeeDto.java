@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class EmployeeDto {
-    private  Long id;
+
     @NotBlank(message = "First name is verplicht")
     private  String firstName;
     @NotBlank(message = "Last name is verplicht")

@@ -12,11 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/departments")
+@RequestMapping("/employees")
 public class EmployeeController {
 
-    private  final EmployeeService employeeService
-            ;
+    private  final EmployeeService employeeService;
 
     public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
@@ -44,5 +43,15 @@ public class EmployeeController {
     @GetMapping("/organization/{organizationId}")
     public  List<EmployeeResponse> findByOrganizationId(@PathVariable Long organizationId){
         return employeeService.findByOrganization(organizationId);
+    }
+    @PutMapping("/{id}")
+    public EmployeeResponse update(@PathVariable Long id, @Valid @RequestBody EmployeeDto request) {
+        return employeeService.update(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        employeeService.delete(id);
     }
 }
