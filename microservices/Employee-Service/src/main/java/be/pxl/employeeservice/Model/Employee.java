@@ -1,4 +1,4 @@
-package be.pxl.employeeservice;
+package be.pxl.employeeservice.Model;
 
 
 import jakarta.persistence.*;

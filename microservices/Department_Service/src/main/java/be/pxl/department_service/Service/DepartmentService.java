@@ -1,8 +1,11 @@
-package be.pxl.department_service;
+package be.pxl.department_service.Service;
 
 
 import be.pxl.department_service.Dto.DepartmentDtos;
 import be.pxl.department_service.Dto.DepartmentResponse;
+import be.pxl.department_service.Exception.DepartmentNotFoundException;
+import be.pxl.department_service.Model.Department;
+import be.pxl.department_service.Repository.DepartmentRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,7 +36,7 @@ public class DepartmentService {
 
     public DepartmentResponse findById(Long id) {
         Department department = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department " + id + " niet gevonden"));
+                .orElseThrow(() -> new DepartmentNotFoundException(id));
 
         return new DepartmentResponse(
                 department.getId(),

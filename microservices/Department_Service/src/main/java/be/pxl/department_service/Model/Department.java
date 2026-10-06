@@ -1,4 +1,4 @@
-package be.pxl.department_service;
+package be.pxl.department_service.Model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

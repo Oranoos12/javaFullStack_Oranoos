@@ -1,8 +1,9 @@
-package be.pxl.employeeservice;
+package be.pxl.employeeservice.Controller;
 
 
 import be.pxl.employeeservice.Dto.EmployeeDto;
 import be.pxl.employeeservice.Dto.EmployeeResponse;
+import be.pxl.employeeservice.Service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.util.List;
 @RequestMapping("/departments")
 public class EmployeeController {
 
-    private  final  EmployeeService employeeService
+    private  final EmployeeService employeeService
             ;
 
     public EmployeeController(EmployeeService employeeService) {

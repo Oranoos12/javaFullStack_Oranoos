@@ -1,16 +1,17 @@
-package be.pxl.employeeservice;
+package be.pxl.employeeservice.Service;
 
 import be.pxl.employeeservice.Dto.EmployeeDto;
 import be.pxl.employeeservice.Dto.EmployeeResponse;
-import org.springframework.http.HttpStatus;
+import be.pxl.employeeservice.Exception.EmployeeNotFoundException;
+import be.pxl.employeeservice.Model.Employee;
+import be.pxl.employeeservice.Repository.EmployeeRepo;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
 public class EmployeeService {
-    private  final  EmployeeRepo employeeRepo;
+    private  final EmployeeRepo employeeRepo;
 
     public EmployeeService(EmployeeRepo employeeRepo) {
         this.employeeRepo = employeeRepo;
@@ -21,9 +22,9 @@ public class EmployeeService {
         Employee employee = new Employee();
         employee.setFirstName(request.getFirstName());
         employee.setLastName(request.getLastName());
-        employee.setEmail(employee.getEmail());
-        employee.setDepartmentId(employee.getDepartmentId());
-        employee.setOrganizationId(employee.getOrganizationId());
+        employee.setEmail(request.getEmail());
+        employee.setDepartmentId(request.getDepartmentId());
+        employee.setOrganizationId(request.getOrganizationId());
 
 
         Employee employeeSaved = employeeRepo.save(employee);
@@ -52,7 +53,7 @@ public class EmployeeService {
 
     public  EmployeeResponse findById(Long id){
         Employee employee  = employeeRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee " + id + " niet gevonden"));
+                .orElseThrow(() -> new EmployeeNotFoundException(id));
 
 
         return  new EmployeeResponse(

@@ -1,6 +1,7 @@
-package be.pxl.employeeservice;
+package be.pxl.employeeservice.Repository;
 
 
+import be.pxl.employeeservice.Model.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
