@@ -2,6 +2,8 @@ package be.pxl.department_service.Controller;
 
 import be.pxl.department_service.Dto.DepartmentDtos;
 import be.pxl.department_service.Dto.DepartmentResponse;
+import be.pxl.department_service.Dto.DepartmentWithEmployeesResponse;
+import be.pxl.department_service.Dto.EmployeeDto;
 import be.pxl.department_service.Exception.DepartmentNotFoundException;
 import be.pxl.department_service.Service.DepartmentService;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DepartmentControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
 
     @MockitoBean
     private DepartmentService departmentService;
@@ -66,6 +69,18 @@ public class DepartmentControllerTest {
         mockMvc.perform(get("/departments/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").exists());
+    }
+
+    @Test
+    void findByOrganizationWithEmployees_returns200() throws Exception {
+        EmployeeDto employee = new EmployeeDto(7L, "Jan", "Peeters", "jan@pxl.be");
+        when(departmentService.findByOrganizationWithEmployees(1L))
+                .thenReturn(List.of(new DepartmentWithEmployeesResponse(1L, "IT", 1L, List.of(employee))));
+
+        mockMvc.perform(get("/departments/organization/1/with-employees"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("IT"))
+                .andExpect(jsonPath("$[0].employees[0].firstName").value("Jan"));
     }
 
 

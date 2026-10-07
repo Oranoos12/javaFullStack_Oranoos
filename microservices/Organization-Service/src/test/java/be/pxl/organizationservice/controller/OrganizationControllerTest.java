@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import be.pxl.organizationservice.dto.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -19,8 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import be.pxl.organizationservice.dto.OrganizationRequest;
-import be.pxl.organizationservice.dto.OrganizationResponse;
 import be.pxl.organizationservice.exception.OrganizationNotFoundException;
 import be.pxl.organizationservice.service.OrganizationService;
 
@@ -76,5 +75,40 @@ class OrganizationControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(organizationService).delete(5L);
+    }
+
+    @Test
+    void findByIdWithDepartments_returns200() throws Exception {
+        when(organizationService.findByIdWithDepartments(1L)).thenReturn(
+                new OrganizationWithDepartmentsResponse(1L, "PXL", List.of(new DepartmentDto(1L, "IT"))));
+
+        mockMvc.perform(get("/organizations/1/with-departments"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("PXL"))
+                .andExpect(jsonPath("$.departments[0].name").value("IT"));
+    }
+
+    @Test
+    void findByIdWithEmployees_returns200() throws Exception {
+        when(organizationService.findByIdWithEmployees(1L)).thenReturn(
+                new OrganizationWithEmployeesResponse(1L, "PXL",
+                        List.of(new EmployeeDto(7L, "Jan", "Peeters", "jan@pxl.be"))));
+
+        mockMvc.perform(get("/organizations/1/with-employees"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.employees[0].firstName").value("Jan"));
+    }
+
+    @Test
+    void findByIdWithDepartmentsAndEmployees_returns200() throws Exception {
+        EmployeeDto employee = new EmployeeDto(7L, "Jan", "Peeters", "jan@pxl.be");
+        when(organizationService.findByIdWithDepartmentsAndEmployees(1L)).thenReturn(
+                new OrganizationWithDepartmentsAndEmployeesResponse(1L, "PXL",
+                        List.of(new DepartmentWithEmployeesDto(1L, "IT", List.of(employee)))));
+
+        mockMvc.perform(get("/organizations/1/with-departments-and-employees"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.departments[0].name").value("IT"))
+                .andExpect(jsonPath("$.departments[0].employees[0].lastName").value("Peeters"));
     }
 }

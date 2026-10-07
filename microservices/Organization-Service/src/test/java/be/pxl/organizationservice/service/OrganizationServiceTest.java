@@ -10,6 +10,9 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import be.pxl.organizationservice.client.DepartmentClient;
+import be.pxl.organizationservice.client.EmployeeClient;
+import be.pxl.organizationservice.dto.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -17,8 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import be.pxl.organizationservice.dto.OrganizationRequest;
-import be.pxl.organizationservice.dto.OrganizationResponse;
 import be.pxl.organizationservice.exception.OrganizationNotFoundException;
 import be.pxl.organizationservice.model.Organization;
 import be.pxl.organizationservice.repository.OrganizationRepository;
@@ -28,6 +29,11 @@ class OrganizationServiceTest {
 
     @Mock
     private OrganizationRepository organizationRepository;
+    @Mock
+    private DepartmentClient departmentClient;
+
+    @Mock
+    private EmployeeClient employeeClient;
 
     @InjectMocks
     private OrganizationService organizationService;
@@ -116,5 +122,53 @@ class OrganizationServiceTest {
         assertThrows(OrganizationNotFoundException.class, () -> organizationService.delete(99L));
 
         verify(organizationRepository, never()).deleteById(any());
+    }
+    @Test
+    void findByIdWithDepartments_returnsOrganizationWithItsDepartments() {
+        when(organizationRepository.findById(5L)).thenReturn(Optional.of(createOrganization(5L)));
+        when(departmentClient.findByOrganization(5L)).thenReturn(List.of(new DepartmentDto(1L, "IT")));
+
+        OrganizationWithDepartmentsResponse response = organizationService.findByIdWithDepartments(5L);
+
+        assertEquals("PXL", response.name());
+        assertEquals(1, response.departments().size());
+        assertEquals("IT", response.departments().get(0).name());
+    }
+
+    @Test
+    void findByIdWithEmployees_returnsOrganizationWithItsEmployees() {
+        when(organizationRepository.findById(5L)).thenReturn(Optional.of(createOrganization(5L)));
+        when(employeeClient.findByOrganization(5L))
+                .thenReturn(List.of(new EmployeeDto(7L, "Jan", "Peeters", "jan@pxl.be")));
+
+        OrganizationWithEmployeesResponse response = organizationService.findByIdWithEmployees(5L);
+
+        assertEquals("PXL", response.name());
+        assertEquals(1, response.employees().size());
+        assertEquals("Jan", response.employees().get(0).firstName());
+    }
+
+    @Test
+    void findByIdWithDepartmentsAndEmployees_returnsDepartmentsWithTheirEmployees() {
+        EmployeeDto employee = new EmployeeDto(7L, "Jan", "Peeters", "jan@pxl.be");
+        when(organizationRepository.findById(5L)).thenReturn(Optional.of(createOrganization(5L)));
+        when(departmentClient.findByOrganizationWithEmployees(5L))
+                .thenReturn(List.of(new DepartmentWithEmployeesDto(1L, "IT", List.of(employee))));
+
+        OrganizationWithDepartmentsAndEmployeesResponse response =
+                organizationService.findByIdWithDepartmentsAndEmployees(5L);
+
+        assertEquals("PXL", response.name());
+        assertEquals("IT", response.departments().get(0).name());
+        assertEquals("Jan", response.departments().get(0).employees().get(0).firstName());
+    }
+
+    @Test
+    void findByIdWithDepartments_unknownOrganization_neverCallsDepartmentService() {
+        when(organizationRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(OrganizationNotFoundException.class, () -> organizationService.findByIdWithDepartments(99L));
+
+        verify(departmentClient, never()).findByOrganization(any());
     }
 }

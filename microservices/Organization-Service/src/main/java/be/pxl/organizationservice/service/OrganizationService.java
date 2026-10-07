@@ -2,10 +2,11 @@ package be.pxl.organizationservice.service;
 
 import java.util.List;
 
+import be.pxl.organizationservice.client.DepartmentClient;
+import be.pxl.organizationservice.client.EmployeeClient;
+import be.pxl.organizationservice.dto.*;
 import org.springframework.stereotype.Service;
 
-import be.pxl.organizationservice.dto.OrganizationRequest;
-import be.pxl.organizationservice.dto.OrganizationResponse;
 import be.pxl.organizationservice.exception.OrganizationNotFoundException;
 import be.pxl.organizationservice.model.Organization;
 import be.pxl.organizationservice.repository.OrganizationRepository;
@@ -14,9 +15,15 @@ import be.pxl.organizationservice.repository.OrganizationRepository;
 public class OrganizationService {
 
     private final OrganizationRepository organizationRepository;
+    private final DepartmentClient departmentClient;
+    private final EmployeeClient employeeClient;
 
-    public OrganizationService(OrganizationRepository organizationRepository) {
+    public OrganizationService(OrganizationRepository organizationRepository,
+                               DepartmentClient departmentClient,
+                               EmployeeClient employeeClient) {
         this.organizationRepository = organizationRepository;
+        this.departmentClient = departmentClient;
+        this.employeeClient = employeeClient;
     }
 
     public OrganizationResponse create(OrganizationRequest request) {
@@ -44,6 +51,24 @@ public class OrganizationService {
             throw new OrganizationNotFoundException(id);
         }
         organizationRepository.deleteById(id);
+    }
+
+    public OrganizationWithDepartmentsResponse findByIdWithDepartments(Long id) {
+        Organization organization = getOrganization(id);
+        List<DepartmentDto> departments = departmentClient.findByOrganization(id);
+        return new OrganizationWithDepartmentsResponse(organization.getId(), organization.getName(), departments);
+    }
+
+    public OrganizationWithEmployeesResponse findByIdWithEmployees(Long id) {
+        Organization organization = getOrganization(id);
+        List<EmployeeDto> employees = employeeClient.findByOrganization(id);
+        return new OrganizationWithEmployeesResponse(organization.getId(), organization.getName(), employees);
+    }
+
+    public OrganizationWithDepartmentsAndEmployeesResponse findByIdWithDepartmentsAndEmployees(Long id) {
+        Organization organization = getOrganization(id);
+        List<DepartmentWithEmployeesDto> departments = departmentClient.findByOrganizationWithEmployees(id);
+        return new OrganizationWithDepartmentsAndEmployeesResponse(organization.getId(), organization.getName(), departments);
     }
 
     // --- hulpmethodes ---

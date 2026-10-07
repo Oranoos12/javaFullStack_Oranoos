@@ -2,6 +2,7 @@ package be.pxl.organizationservice.controller;
 
 import java.util.List;
 
+import be.pxl.organizationservice.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
-import be.pxl.organizationservice.dto.OrganizationRequest;
-import be.pxl.organizationservice.dto.OrganizationResponse;
 import be.pxl.organizationservice.service.OrganizationService;
 
 @RestController
@@ -54,5 +53,20 @@ public class OrganizationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         organizationService.delete(id);
+    }
+
+    @GetMapping("/{id}/with-departments")
+    public OrganizationWithDepartmentsResponse findByIdWithDepartments(@PathVariable Long id) {
+        return organizationService.findByIdWithDepartments(id);
+    }
+
+    @GetMapping("/{id}/with-employees")
+    public OrganizationWithEmployeesResponse findByIdWithEmployees(@PathVariable Long id) {
+        return organizationService.findByIdWithEmployees(id);
+    }
+
+    @GetMapping("/{id}/with-departments-and-employees")
+    public OrganizationWithDepartmentsAndEmployeesResponse findByIdWithDepartmentsAndEmployees(@PathVariable Long id) {
+        return organizationService.findByIdWithDepartmentsAndEmployees(id);
     }
 }
