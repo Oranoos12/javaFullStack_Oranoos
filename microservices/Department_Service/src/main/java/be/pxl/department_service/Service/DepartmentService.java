@@ -1,23 +1,27 @@
 package be.pxl.department_service.Service;
 
 
+import be.pxl.department_service.Client.EmployeeClient;
 import be.pxl.department_service.Dto.DepartmentDtos;
 import be.pxl.department_service.Dto.DepartmentResponse;
+import be.pxl.department_service.Dto.DepartmentWithEmployeesResponse;
+import be.pxl.department_service.Dto.EmployeeDto;
 import be.pxl.department_service.Exception.DepartmentNotFoundException;
 import be.pxl.department_service.Model.Department;
 import be.pxl.department_service.Repository.DepartmentRepo;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class DepartmentService {
     private final DepartmentRepo repository;
+    private final EmployeeClient employeeClient;
 
-    public DepartmentService(DepartmentRepo repository) {
+    public DepartmentService(DepartmentRepo repository, EmployeeClient employeeClient) {
         this.repository = repository;
+        this.employeeClient = employeeClient;
     }
 
     public DepartmentResponse add(DepartmentDtos req) {
@@ -65,6 +69,21 @@ public class DepartmentService {
                         d.getOrganizationId()
                 ))
                 .toList();
+    }
+
+
+    public List<DepartmentWithEmployeesResponse> findByOrganizationWithEmployees(Long organizationId) {
+        List<DepartmentWithEmployeesResponse> result = new ArrayList<>();
+
+        for (Department department : repository.findByOrganizationId(organizationId)) {
+            List<EmployeeDto> employees = employeeClient.findByDepartment(department.getId());
+            result.add(new DepartmentWithEmployeesResponse(
+                    department.getId(),
+                    department.getName(),
+                    department.getOrganizationId(),
+                    employees));
+        }
+        return result;
     }
 
 

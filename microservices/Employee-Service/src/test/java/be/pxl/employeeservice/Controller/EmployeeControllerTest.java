@@ -95,4 +95,29 @@ public class EmployeeControllerTest {
 
         verify(employeeService).delete(5L);
     }
+    @Test
+    void findByDepartment_returns200() throws Exception {
+        EmployeeResponse response = new EmployeeResponse(1L, "Jan", "Peeters", "jan@pxl.be", 1L, 2L);
+        when(employeeService.findByDepartment(1L)).thenReturn(List.of(response));
+
+        mockMvc.perform(get("/employees/department/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].firstName").value("Jan"))
+                .andExpect(jsonPath("$[0].departmentId").value(1));
+
+        verify(employeeService).findByDepartment(1L);
+    }
+
+    @Test
+    void findByOrganization_returns200() throws Exception {
+        EmployeeResponse response = new EmployeeResponse(1L, "Jan", "Peeters", "jan@pxl.be", 1L, 2L);
+        when(employeeService.findByOrganization(2L)).thenReturn(List.of(response));
+
+        mockMvc.perform(get("/employees/organization/2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].lastName").value("Peeters"))
+                .andExpect(jsonPath("$[0].organizationId").value(2));
+
+        verify(employeeService).findByOrganization(2L);
+    }
 }

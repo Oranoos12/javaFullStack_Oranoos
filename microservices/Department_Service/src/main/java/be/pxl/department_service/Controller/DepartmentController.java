@@ -2,6 +2,7 @@ package be.pxl.department_service.Controller;
 
 import be.pxl.department_service.Dto.DepartmentDtos;
 import be.pxl.department_service.Dto.DepartmentResponse;
+import be.pxl.department_service.Dto.DepartmentWithEmployeesResponse;
 import be.pxl.department_service.Service.DepartmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,11 @@ public class DepartmentController {
     @GetMapping("/organization/{organizationId}")
     public List<DepartmentResponse> findByOrganization(@PathVariable Long organizationId) {
         return departmentService.findByOrganization(organizationId);
+    }
+
+    @GetMapping("/organization/{organizationId}/with-employees")
+    public List<DepartmentWithEmployeesResponse> findByOrganizationWithEmployees(@PathVariable Long organizationId) {
+        return departmentService.findByOrganizationWithEmployees(organizationId);
     }
 
 

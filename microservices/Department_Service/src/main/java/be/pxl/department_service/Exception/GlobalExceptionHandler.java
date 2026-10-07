@@ -1,38 +1,32 @@
 package be.pxl.department_service.Exception;
 
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-
-    public ResponseEntity<List<String>>
-    handleValidationErrors(MethodArgumentNotValidException ex) {
-
-        List<String> errors = new ArrayList<>();
-        for (ObjectError error : ex.getBindingResult().getAllErrors()) {
-            errors.add(error.getDefaultMessage());
-        }
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(DepartmentNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNotFound(DepartmentNotFoundException e) {
+        return Map.of("error", e.getMessage());
     }
 
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<?> handleBadRequest(
-            BadRequestException e) {
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(e.getMessage());
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidation(MethodArgumentNotValidException e) {
+        Map<String, String> errors = new HashMap<>();
+        for (FieldError error : e.getBindingResult().getFieldErrors()) {
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+        return errors;
     }
 }
 
