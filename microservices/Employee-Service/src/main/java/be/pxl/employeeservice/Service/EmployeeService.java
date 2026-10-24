@@ -1,7 +1,9 @@
 package be.pxl.employeeservice.Service;
 
+import be.pxl.employeeservice.Client.NotificationClient;
 import be.pxl.employeeservice.Dto.EmployeeDto;
 import be.pxl.employeeservice.Dto.EmployeeResponse;
+import be.pxl.employeeservice.Dto.NotificationRequest;
 import be.pxl.employeeservice.Exception.EmployeeNotFoundException;
 import be.pxl.employeeservice.Model.Employee;
 import be.pxl.employeeservice.Repository.EmployeeRepo;
@@ -11,10 +13,12 @@ import java.util.List;
 
 @Service
 public class EmployeeService {
-    private  final EmployeeRepo employeeRepo;
+    private final EmployeeRepo employeeRepo;
+    private final NotificationClient notificationClient;
 
-    public EmployeeService(EmployeeRepo employeeRepo) {
+    public EmployeeService(EmployeeRepo employeeRepo, NotificationClient notificationClient) {
         this.employeeRepo = employeeRepo;
+        this.notificationClient = notificationClient;
     }
 
     public EmployeeResponse add(EmployeeDto request){
@@ -26,8 +30,11 @@ public class EmployeeService {
         employee.setDepartmentId(request.getDepartmentId());
         employee.setOrganizationId(request.getOrganizationId());
 
-
         Employee employeeSaved = employeeRepo.save(employee);
+
+        notificationClient.sendNotification(new NotificationRequest(
+                employeeSaved.getEmail(),
+                "Welkom " + employeeSaved.getFirstName() + ", je bent toegevoegd als werknemer."));
 
         return new EmployeeResponse(
                 employeeSaved.getId(),
@@ -36,7 +43,6 @@ public class EmployeeService {
                 employeeSaved.getEmail(),
                 employeeSaved.getDepartmentId(),
                 employeeSaved.getOrganizationId());
-
     }
 
 

@@ -1,8 +1,10 @@
 package be.pxl.employeeservice.Service;
 
 
+import be.pxl.employeeservice.Client.NotificationClient;
 import be.pxl.employeeservice.Dto.EmployeeDto;
 import be.pxl.employeeservice.Dto.EmployeeResponse;
+import be.pxl.employeeservice.Dto.NotificationRequest;
 import be.pxl.employeeservice.Exception.EmployeeNotFoundException;
 import be.pxl.employeeservice.Model.Employee;
 import be.pxl.employeeservice.Repository.EmployeeRepo;
@@ -24,6 +26,8 @@ import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeeServiceTest {
+    @Mock
+    private NotificationClient notificationClient;
 
     @Mock
     private EmployeeRepo employeeRepository;
@@ -127,5 +131,17 @@ public class EmployeeServiceTest {
         assertThrows(EmployeeNotFoundException.class, () -> employeeService.delete(99L));
 
         verify(employeeRepository, never()).deleteById(any());
+    }
+    @Test
+    void add_sendsNotificationToTheNewEmployee() {
+        EmployeeDto request = new EmployeeDto("Jan", "Peeters", "jan@pxl.be", 1L, 2L);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(createEmployee(10L));
+
+        employeeService.add(request);
+
+        ArgumentCaptor<NotificationRequest> captor = ArgumentCaptor.forClass(NotificationRequest.class);
+        verify(notificationClient).sendNotification(captor.capture());
+        assertEquals("jan@pxl.be", captor.getValue().recipient());
+        assertEquals("Welkom Jan, je bent toegevoegd als werknemer.", captor.getValue().message());
     }
 }

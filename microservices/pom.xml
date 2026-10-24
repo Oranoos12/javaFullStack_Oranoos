@@ -20,6 +20,7 @@
         <module>Department_Service</module>
         <module>Organization-Service</module>
         <module>Notification_Service</module>
+        <module>Discovery-Services</module>
 
     </modules>
 </project>
