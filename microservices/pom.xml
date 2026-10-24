@@ -22,11 +22,13 @@
     </properties>
 
     <modules>
+        <module>Config-Service</module>
         <module>Discovery-Services</module>
         <module>Employee-Service</module>
         <module>Department_Service</module>
         <module>Organization-Service</module>
         <module>Notification_Service</module>
+        <module>Gateway-Service</module>
     </modules>
 
     <dependencyManagement>
