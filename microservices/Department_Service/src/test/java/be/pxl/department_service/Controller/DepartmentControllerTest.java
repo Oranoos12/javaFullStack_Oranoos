@@ -83,5 +83,13 @@ public class DepartmentControllerTest {
                 .andExpect(jsonPath("$[0].employees[0].firstName").value("Jan"));
     }
 
+    @Test
+    void create_invalidRequest_returns400AndNeverCallsService() throws Exception {
+        mockMvc.perform(post("/departments").contentType(MediaType.APPLICATION_JSON).content(INVALID_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.name").exists())
+                .andExpect(jsonPath("$.organizationId").exists());
 
+        verify(departmentService, never()).add(any());
+    }
 }

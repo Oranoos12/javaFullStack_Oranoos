@@ -1,7 +1,7 @@
-package be.pxl.employeeservice;
+package be.pxl.employeeservice.Repository;
 
 import be.pxl.employeeservice.Model.Employee;
-import be.pxl.employeeservice.Repository.EmployeeRepo;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +27,11 @@ class EmployeeRepositoryTest {
 
     @Autowired
     private EmployeeRepo employeeRepo;
+
+    @BeforeEach
+    void cleanDatabase() {
+        employeeRepo.deleteAll();
+    }
 
     private Employee createEmployee(String firstName, Long departmentId, Long organizationId) {
         Employee employee = new Employee();

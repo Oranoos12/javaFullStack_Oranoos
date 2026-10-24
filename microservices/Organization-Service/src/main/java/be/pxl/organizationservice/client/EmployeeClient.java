@@ -1,26 +1,15 @@
 package be.pxl.organizationservice.client;
 
 import be.pxl.organizationservice.dto.EmployeeDto;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@Component
-public class EmployeeClient {
+@FeignClient(name = "employee-service")
+public interface EmployeeClient {
 
-    private final RestClient restClient;
-
-    public EmployeeClient(@Value("${employee-service.url}") String employeeServiceUrl) {
-        this.restClient = RestClient.create(employeeServiceUrl);
-    }
-
-    public List<EmployeeDto> findByOrganization(Long organizationId) {
-        return restClient.get()
-                .uri("/employees/organization/{organizationId}", organizationId)
-                .retrieve()
-                .body(new ParameterizedTypeReference<List<EmployeeDto>>() {});
-    }
+    @GetMapping("/employees/organization/{organizationId}")
+    List<EmployeeDto> findByOrganization(@PathVariable("organizationId") Long organizationId);
 }

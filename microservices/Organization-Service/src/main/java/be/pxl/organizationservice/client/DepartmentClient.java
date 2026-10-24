@@ -1,33 +1,19 @@
 package be.pxl.organizationservice.client;
 
-import org.springframework.stereotype.Component;
 import be.pxl.organizationservice.dto.DepartmentDto;
 import be.pxl.organizationservice.dto.DepartmentWithEmployeesDto;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.client.RestClient;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@Component
-public class DepartmentClient {
-    private final RestClient restClient;
+@FeignClient(name = "department-service")
+public interface DepartmentClient {
 
-    public DepartmentClient(@Value("${department-service.url}") String departmentServiceUrl) {
-        this.restClient = RestClient.create(departmentServiceUrl);
-    }
+    @GetMapping("/departments/organization/{organizationId}")
+    List<DepartmentDto> findByOrganization(@PathVariable("organizationId") Long organizationId);
 
-    public List<DepartmentDto> findByOrganization(Long organizationId) {
-        return restClient.get()
-                .uri("/departments/organization/{organizationId}", organizationId)
-                .retrieve()
-                .body(new ParameterizedTypeReference<List<DepartmentDto>>() {});
-    }
-
-    public List<DepartmentWithEmployeesDto> findByOrganizationWithEmployees(Long organizationId) {
-        return restClient.get()
-                .uri("/departments/organization/{organizationId}/with-employees", organizationId)
-                .retrieve()
-                .body(new ParameterizedTypeReference<List<DepartmentWithEmployeesDto>>() {});
-    }
+    @GetMapping("/departments/organization/{organizationId}/with-employees")
+    List<DepartmentWithEmployeesDto> findByOrganizationWithEmployees(@PathVariable("organizationId") Long organizationId);
 }
