@@ -6,6 +6,16 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8061/eureka/
 
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  pattern:
+    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+  include-application-name: false
+
 spring:
   cloud:
     gateway:
