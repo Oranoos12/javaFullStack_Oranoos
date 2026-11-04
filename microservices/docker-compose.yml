@@ -54,3 +54,10 @@ services:
       GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
     volumes:
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+
+  rabbitmq:
+    image: rabbitmq:4.4.0-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
