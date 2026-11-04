@@ -1,12 +1,15 @@
 package be.pxl.employeeservice.Service;
 
 import be.pxl.employeeservice.Client.NotificationClient;
+import be.pxl.employeeservice.Dto.EmployeeCreatedEvent;
 import be.pxl.employeeservice.Dto.EmployeeDto;
 import be.pxl.employeeservice.Dto.EmployeeResponse;
 import be.pxl.employeeservice.Dto.NotificationRequest;
 import be.pxl.employeeservice.Exception.EmployeeNotFoundException;
 import be.pxl.employeeservice.Model.Employee;
 import be.pxl.employeeservice.Repository.EmployeeRepo;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +20,13 @@ import java.util.List;
 public class EmployeeService {
     private final EmployeeRepo employeeRepo;
     private final NotificationClient notificationClient;
+    private final RabbitTemplate rabbitTemplate;
     private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
 
-    public EmployeeService(EmployeeRepo employeeRepo, NotificationClient notificationClient) {
+    public EmployeeService(EmployeeRepo employeeRepo, NotificationClient notificationClient, RabbitTemplate rabbitTemplate) {
         this.employeeRepo = employeeRepo;
         this.notificationClient = notificationClient;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public EmployeeResponse add(EmployeeDto request){
@@ -36,6 +41,13 @@ public class EmployeeService {
 
         Employee employeeSaved = employeeRepo.save(employee);
         log.info("Werknemer opgeslagen met id {}", employeeSaved.getId());
+
+        try {
+            rabbitTemplate.convertAndSend("employee.created",
+                    new EmployeeCreatedEvent(employeeSaved.getId(), employeeSaved.getEmail()));
+        } catch (AmqpException e) {
+            log.warn("Broker onbereikbaar, event employee.created niet verstuurd voor employee {}", employeeSaved.getId());
+        }
 
         log.info("Notificatie versturen naar {}", employeeSaved.getEmail());
         notificationClient.sendNotification(new NotificationRequest(

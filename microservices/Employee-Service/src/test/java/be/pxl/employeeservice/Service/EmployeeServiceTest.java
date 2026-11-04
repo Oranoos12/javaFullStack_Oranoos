@@ -2,6 +2,7 @@ package be.pxl.employeeservice.Service;
 
 
 import be.pxl.employeeservice.Client.NotificationClient;
+import be.pxl.employeeservice.Dto.EmployeeCreatedEvent;
 import be.pxl.employeeservice.Dto.EmployeeDto;
 import be.pxl.employeeservice.Dto.EmployeeResponse;
 import be.pxl.employeeservice.Dto.NotificationRequest;
@@ -14,6 +15,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +24,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
 
@@ -31,6 +36,9 @@ public class EmployeeServiceTest {
 
     @Mock
     private EmployeeRepo employeeRepository;
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
 
     @InjectMocks
     private EmployeeService employeeService;
@@ -143,5 +151,31 @@ public class EmployeeServiceTest {
         verify(notificationClient).sendNotification(captor.capture());
         assertEquals("jan@pxl.be", captor.getValue().recipient());
         assertEquals("Welkom Jan, je bent toegevoegd als werknemer.", captor.getValue().message());
+    }
+
+    @Test
+    void add_publishesEmployeeCreatedEvent() {
+        EmployeeDto request = new EmployeeDto("Jan", "Peeters", "jan@pxl.be", 1L, 2L);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(createEmployee(10L));
+
+        employeeService.add(request);
+
+        ArgumentCaptor<EmployeeCreatedEvent> captor = ArgumentCaptor.forClass(EmployeeCreatedEvent.class);
+        verify(rabbitTemplate).convertAndSend(eq("employee.created"), captor.capture());
+        assertEquals(10L, captor.getValue().id());
+        assertEquals("jan@pxl.be", captor.getValue().email());
+    }
+
+    @Test
+    void add_brokerDown_stillCreatesEmployee() {
+        EmployeeDto request = new EmployeeDto("Jan", "Peeters", "jan@pxl.be", 1L, 2L);
+        when(employeeRepository.save(any(Employee.class))).thenReturn(createEmployee(10L));
+        doThrow(new AmqpException("broker down")).when(rabbitTemplate)
+                .convertAndSend(anyString(), any(Object.class));
+
+        EmployeeResponse response = employeeService.add(request);
+
+        assertEquals(10L, response.getId());
+        verify(employeeRepository).save(any(Employee.class));
     }
 }
