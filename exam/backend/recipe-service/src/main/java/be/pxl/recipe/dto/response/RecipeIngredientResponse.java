@@ -1,4 +1,4 @@
-package be.pxl.recipe.dto.Response;
+package be.pxl.recipe.dto.response;
 
-public record RecipeIngredientResponse() {
+public record RecipeIngredientResponse(Long ingredientId, String name, String unit, double quantityPerPerson) {
 }

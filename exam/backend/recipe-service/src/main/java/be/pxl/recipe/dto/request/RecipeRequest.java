@@ -1,4 +1,4 @@
-package be.pxl.recipe.dto;
+package be.pxl.recipe.dto.request;
 
 import be.pxl.recipe.model.Allergen;
 import jakarta.validation.Valid;

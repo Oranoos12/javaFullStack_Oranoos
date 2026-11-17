@@ -1,6 +1,6 @@
 # Analyse Maaltijdboxen
 
-![C2 containerdiagram](architecture/c2-container.drawio.png)
+![C2 containerdiagram](architecture/c2-container-c4.drawio.png)
 
 ## Welke services en waarom
 
