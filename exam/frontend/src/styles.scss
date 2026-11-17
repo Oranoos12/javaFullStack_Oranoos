@@ -1,1 +1,212 @@
-/* You can add global styles to this file, and also import other style files */
+$text: #212121;
+$muted: #595959;
+$light: #8c8c8c;
+$border: #e3e3e3;
+$background: #f5f5f5;
+$white: #ffffff;
+$radius: 8px;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 14px;
+  color: $text;
+  background: $background;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 0 0 16px;
+}
+
+h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+a {
+  color: $text;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $white;
+  border-bottom: 1px solid $border;
+  padding: 14px 32px;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 18px;
+
+  a {
+    color: $light;
+    text-decoration: none;
+
+    &.active {
+      color: $text;
+      font-weight: 600;
+    }
+  }
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: $muted;
+}
+
+.panel {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 9px 16px;
+  border-radius: 6px;
+  border: 1px solid #cccccc;
+  background: $white;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+
+  &.primary {
+    background: $text;
+    border-color: $text;
+    color: $white;
+  }
+
+  &.small {
+    padding: 5px 10px;
+    font-size: 13px;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: $border;
+  color: $muted;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-CONFIRMED,
+.status-PLACED {
+  background: #dbeafe;
+}
+
+.status-IN_DELIVERY {
+  background: $text;
+  color: $white;
+}
+
+.status-DELIVERED {
+  background: #dcfce7;
+}
+
+.status-CANCELLED {
+  background: $white;
+  border: 1px solid #cccccc;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    color: $muted;
+  }
+
+  input,
+  select,
+  textarea {
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    padding: 9px 10px;
+    font: inherit;
+  }
+}
+
+.alert {
+  border: 1px solid $text;
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: $white;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.muted {
+  color: $light;
+  font-size: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: $white;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid $border;
+}
+
+th {
+  font-size: 12px;
+  color: $muted;
+}

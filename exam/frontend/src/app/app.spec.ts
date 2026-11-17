@@ -1,23 +1,27 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { App } from './app';
+import { AuthService } from './services/auth.service';
 
 describe('App', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    sessionStorage.clear();
+    TestBed.configureTestingModule({
       imports: [App],
-    }).compileComponents();
+      providers: [provideRouter([])]
+    });
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render title', async () => {
+  it('should hide the menu when nobody is logged in', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, frontend');
+    expect((fixture.nativeElement as HTMLElement).querySelector('header')).toBeNull();
+  });
+
+  it('should show the klant menu after login', async () => {
+    TestBed.inject(AuthService).login('jan', 'KLANT');
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Mijn bestellingen');
   });
 });
