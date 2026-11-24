@@ -17,6 +17,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>discovery-service</module>
         <module>recipe-service</module>
         <module>order-service</module>
         <module>inventory-service</module>
