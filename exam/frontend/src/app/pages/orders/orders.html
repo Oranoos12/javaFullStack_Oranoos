@@ -1,0 +1,43 @@
+<a routerLink="/" class="back">← Terug naar start</a>
+<h1>Mijn bestellingen</h1>
+
+@if (orderStore.error()) {
+  <p class="alert" role="alert">{{ orderStore.error() }}</p>
+}
+@if (orderStore.loading()) {
+  <p role="status">Bestellingen laden…</p>
+}
+
+<table>
+  <thead>
+    <tr>
+      <th>Bestelling</th>
+      <th>Geplaatst op</th>
+      <th>Recepten</th>
+      <th>Pers.</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (order of orderStore.orders(); track order.id) {
+      <tr>
+        <td>#{{ order.id }}</td>
+        <td>{{ order.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>{{ recipeNames(order) }}</td>
+        <td>{{ order.persons }}</td>
+        <td><span class="badge status-{{ order.status }}">{{ order.status }}</span></td>
+        <td>
+          <button type="button" class="btn small" [disabled]="!canCancel(order)" (click)="cancel(order.id)"
+                  [attr.aria-label]="'Annuleer bestelling ' + order.id">
+            Annuleren
+          </button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="6" role="status">Je hebt nog geen bestellingen.</td>
+      </tr>
+    }
+  </tbody>
+</table>

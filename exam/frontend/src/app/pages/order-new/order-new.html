@@ -1,0 +1,77 @@
+<a routerLink="/" class="back">← Terug naar start</a>
+<h1>Bestelling plaatsen</h1>
+
+@if (orderStore.error()) {
+  <p class="alert" role="alert">{{ orderStore.error() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="row">
+  <div style="flex: 1">
+    <section class="panel">
+      <h2>1. Jouw box</h2>
+      @for (recipe of chosenRecipes(); track recipe.id) {
+        <p>
+          {{ recipe.name }}
+          <button type="button" class="btn small" (click)="removeFromBox(recipe.id)" [attr.aria-label]="'Verwijder ' + recipe.name">✕</button>
+        </p>
+      } @empty {
+        <p role="status">Je box is leeg. <a routerLink="/weekmenu">Kies recepten in het weekmenu.</a></p>
+      }
+      <div class="field" style="max-width: 160px">
+        <label for="persons">Aantal personen</label>
+        <input id="persons" type="number" formControlName="persons" min="1" max="8" />
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>2. Leveradres</h2>
+      <div class="row">
+        <div class="field" style="flex: 3">
+          <label for="street">Straat</label>
+          <input id="street" formControlName="street" />
+        </div>
+        <div class="field" style="flex: 1">
+          <label for="number">Nr.</label>
+          <input id="number" formControlName="number" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="field" style="flex: 1">
+          <label for="postalCode">Postcode</label>
+          <input id="postalCode" formControlName="postalCode" />
+        </div>
+        <div class="field" style="flex: 3">
+          <label for="city">Gemeente</label>
+          <input id="city" formControlName="city" />
+        </div>
+      </div>
+      @if (form.controls.street.touched && form.controls.street.invalid) {
+        <small role="alert">Vul het volledige adres in.</small>
+      }
+    </section>
+
+    <section class="panel">
+      <h2>3. Leverslot</h2>
+      <div class="field">
+        <label for="slot">Kies een leverslot</label>
+        <select id="slot" formControlName="slotId">
+          <option [ngValue]="0" disabled>-- kies --</option>
+          @for (slot of orderStore.slots(); track slot.id) {
+            <option [ngValue]="slot.id" [disabled]="slot.freePlaces === 0">
+              {{ slot.date }} {{ slot.startTime.slice(0, 5) }}–{{ slot.endTime.slice(0, 5) }} ({{ slot.freePlaces === 0 ? 'volzet' : slot.freePlaces + ' vrij' }})
+            </option>
+          }
+        </select>
+      </div>
+    </section>
+  </div>
+
+  <aside class="panel" style="width: 280px">
+    <h2>Overzicht</h2>
+    <p>{{ orderStore.boxSize() }} recept(en) voor {{ form.controls.persons.value }} personen.</p>
+    <button type="submit" class="btn primary" [disabled]="orderStore.loading() || orderStore.boxSize() === 0">
+      Bestelling plaatsen
+    </button>
+    <p class="muted">Voorraad en leverslot worden meteen gecontroleerd.</p>
+  </aside>
+</form>

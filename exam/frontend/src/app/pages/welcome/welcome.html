@@ -1,0 +1,19 @@
+@if (auth.user(); as user) {
+  <h1>Welkom, {{ user.id }}</h1>
+  <p class="muted">Kies wat je wil doen.</p>
+
+  <div class="grid">
+    <a class="panel" routerLink="/weekmenu">
+      <h2>Weekmenu</h2>
+      <p class="muted">Bekijk de recepten van deze week en kies wat in je box komt.</p>
+    </a>
+    <a class="panel" routerLink="/bestellen">
+      <h2>Bestellen</h2>
+      <p class="muted">Kies een leverslot en geef je adres.</p>
+    </a>
+    <a class="panel" routerLink="/bestellingen">
+      <h2>Mijn bestellingen</h2>
+      <p class="muted">Volg je bestellingen op of annuleer er een.</p>
+    </a>
+  </div>
+}

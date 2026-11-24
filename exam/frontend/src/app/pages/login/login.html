@@ -1,0 +1,16 @@
+<section class="panel" style="max-width: 420px; margin: 60px auto">
+  <h1>Maaltijdboxen</h1>
+  <p class="muted">Log in als klant met je gebruikersnaam.</p>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="field">
+      <label for="username">Gebruikersnaam</label>
+      <input id="username" formControlName="username" placeholder="bv. jan" />
+      @if (form.controls.username.invalid && form.controls.username.touched) {
+        <small role="alert">Gebruikersnaam is verplicht (minstens 2 tekens).</small>
+      }
+    </div>
+
+    <button type="submit" class="btn primary">Inloggen</button>
+  </form>
+</section>

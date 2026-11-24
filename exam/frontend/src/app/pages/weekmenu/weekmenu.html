@@ -1,0 +1,45 @@
+<a routerLink="/" class="back">← Terug naar start</a>
+<h1>Weekmenu {{ week }}</h1>
+
+@if (recipeStore.error()) {
+  <p class="alert" role="alert">{{ recipeStore.error() }}</p>
+}
+@if (recipeStore.loading()) {
+  <p role="status">Weekmenu laden…</p>
+}
+
+<div class="row">
+  <div class="grid" style="flex: 1">
+    @for (recipe of recipeStore.recipes(); track recipe.id) {
+      <article class="panel" [attr.aria-label]="recipe.name">
+        <h2>{{ recipe.name }}</h2>
+        <p>{{ recipe.prepTimeMinutes }} min · {{ recipe.persons }} pers.</p>
+        <p class="muted">
+          Allergenen:
+          @for (allergen of recipe.allergens; track allergen) {
+            <span class="badge">{{ allergen }}</span>
+          } @empty {
+            geen
+          }
+        </p>
+        @if (auth.hasRole('KLANT')) {
+          <button type="button" class="btn small" [class.primary]="isInBox(recipe.id)" (click)="toggle(recipe.id)">
+            {{ isInBox(recipe.id) ? 'In box ✓' : 'Toevoegen aan box' }}
+          </button>
+        }
+      </article>
+    } @empty {
+      @if (!recipeStore.loading()) {
+        <p role="status">Er staan nog geen recepten op het menu.</p>
+      }
+    }
+  </div>
+
+  @if (auth.hasRole('KLANT')) {
+    <aside class="panel" style="width: 280px">
+      <h2>Mijn box</h2>
+      <p>{{ orderStore.boxSize() }} recept(en) gekozen.</p>
+      <a routerLink="/bestellen" class="btn primary">Verder naar bestellen</a>
+    </aside>
+  }
+</div>
